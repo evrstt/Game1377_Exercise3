@@ -54,11 +54,13 @@ public class AsteroidsPlayerController : MonoBehaviour
         HandleThrust();
     }
 
+    /// -rotationInput is used so it does the opposite of the input direction, this should simulate the swing of a ship or "spaceship"
+   
     private void HandleRotation()
     {
         float rotationAmount = -rotationInput * rotationSpeed * Time.deltaTime;
 
-        transform.Rotate(Vector3.forward * rotationAmount);
+        transform.Rotate(Vector3.forward * rotationAmount); // i originally did this with a 0f, 0f, + rotationAmount, but I found it works with a Vector3.Forward when * the rotationAmount
     }
 
     private void HandleThrust()
@@ -94,11 +96,13 @@ public class AsteroidsPlayerController : MonoBehaviour
 
     private void TeleportToRandomLocation()
     {
-        /// these two float methods use the ScreenBounds and a random range to determine the x and y positions for the teleport 
+        /// these two floats use the ScreenBounds and a random range to determine the x and y positions for the teleport 
+        /// It also uses the ships current z position, I didnt't test for this but I didn't want to set it to anything else like
+        ///  0f and somehow accidentally change its depth or something wild, so its just set to the current z position 
 
         float randomX = Random.Range(ScreenBounds.ScreenLeft, ScreenBounds.ScreenRight);
         float randomY = Random.Range(ScreenBounds.ScreenBottom, ScreenBounds.ScreenTop);
 
-        transform.position = new Vector3(randomX, randomY, transform.position.z);
+        transform.position = new Vector3(randomX, randomY, transform.position.z); 
     }
 }
