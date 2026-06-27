@@ -88,7 +88,7 @@ public class AsteroidsPlayerController : MonoBehaviour
 
     private void HandleHyperspace()
     {
-        if (Input.GetButtonDown("Fire2"))
+        if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             TeleportToRandomLocation();
         }
