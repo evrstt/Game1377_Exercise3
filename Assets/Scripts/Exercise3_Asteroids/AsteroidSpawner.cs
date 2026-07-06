@@ -21,11 +21,11 @@ public class AsteroidSpawner : MonoBehaviour
 {
     // These variables determine the spawn area for the asteroids.
     // They are calculated at Start based off of the camera size. 
-    private float spawnXMax = 0f;
-    private float spawnXMin = 0f;
-    private float spawnYMax = 0f;
-    private float spawnYMin = 0f;
-    private float playerSafeDistance = 3;
+    [SerializeField] private float spawnXMax = 0f;
+    [SerializeField] private float spawnXMin = 0f;
+    [SerializeField] private float spawnYMax = 0f;
+    [SerializeField] private float spawnYMin = 0f;
+    [SerializeField] private float playerSafeDistance = 3;
 
     void Start()
     {

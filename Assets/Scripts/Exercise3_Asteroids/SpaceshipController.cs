@@ -73,7 +73,10 @@ public class AsteroidsPlayerController : MonoBehaviour
 
     private void HandleFire()
     {
-
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            FireBullet();
+        }
     }
 
     private void FireBullet()
