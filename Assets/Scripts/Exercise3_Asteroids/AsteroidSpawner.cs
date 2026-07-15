@@ -93,7 +93,25 @@ public class AsteroidSpawner : MonoBehaviour
             Debug.LogWarning(size + " asteroid prefab has not been assigned.");
             return;
         }
-        // Creates the selected asteroid at the requested position.
-        Instantiate(asteroidPrefab, position, Quaternion.identity);
+       
+       // Creates the selected asteroid and stores it as reference
+       GameObject newAsteroid = Instantiate(asteroidPrefab, position, Quaternion.identity);
+
+       // Gets the Asteroid compenent from the new asteroid.
+       Asteroid asteroidScript = newAsteroid.GetComponent<Asteroid>();
+
+       if(asteroidScript == null)
+        {
+            Debug.LogWarning(newAsteroid.name + " does not have an Asteroid component");
+            return;
+        }
+
+        // Gives the asteroid a reference to this spawner.
+        asteroidScript.SetSpawner(this);
+
+        // Tells it the aseroid size
+        asteroidScript.SetSize(size);
+
+        
     }
 }
