@@ -11,22 +11,22 @@ public class ScreenWrap : MonoBehaviour
     {
         Vector3 wrappedTransformPosition = transform.position;
 
-        if (wrappedTransformPosition.x > ScreenBounds.ScreenRight)
+        if (wrappedTransformPosition.x > ScreenBounds.screenRight)
         {
-            wrappedTransformPosition.x = ScreenBounds.ScreenLeft;
+            wrappedTransformPosition.x = ScreenBounds.screenLeft;
         }
-        else if (wrappedTransformPosition.x < ScreenBounds.ScreenLeft)
+        else if (wrappedTransformPosition.x < ScreenBounds.screenLeft)
         {
-            wrappedTransformPosition.x = ScreenBounds.ScreenRight;
+            wrappedTransformPosition.x = ScreenBounds.screenRight;
         }
 
-        if (wrappedTransformPosition.y > ScreenBounds.ScreenTop)
+        if (wrappedTransformPosition.y > ScreenBounds.screenTop)
         {
-            wrappedTransformPosition.y = ScreenBounds.ScreenBottom;
+            wrappedTransformPosition.y = ScreenBounds.screenBottom;
         }
-        else if (wrappedTransformPosition.y < ScreenBounds.ScreenBottom)
+        else if (wrappedTransformPosition.y < ScreenBounds.screenBottom)
         {
-            wrappedTransformPosition.y = ScreenBounds.ScreenTop;
+            wrappedTransformPosition.y = ScreenBounds.screenTop;
         }
 
         transform.position = wrappedTransformPosition;

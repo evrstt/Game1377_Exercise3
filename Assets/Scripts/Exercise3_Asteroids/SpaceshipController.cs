@@ -103,8 +103,8 @@ public class AsteroidsPlayerController : MonoBehaviour
         /// It also uses the ships current z position, I didnt't test for this but I didn't want to set it to anything else like
         ///  0f and somehow accidentally change its depth or something wild, so its just set to the current z position 
 
-        float randomX = Random.Range(ScreenBounds.ScreenLeft, ScreenBounds.ScreenRight);
-        float randomY = Random.Range(ScreenBounds.ScreenBottom, ScreenBounds.ScreenTop);
+        float randomX = Random.Range(ScreenBounds.screenLeft, ScreenBounds.screenRight);
+        float randomY = Random.Range(ScreenBounds.screenBottom, ScreenBounds.screenTop);
 
         transform.position = new Vector3(randomX, randomY, transform.position.z); 
     }
