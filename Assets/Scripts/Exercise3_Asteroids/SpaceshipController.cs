@@ -1,42 +1,31 @@
-/*
- * Assignment: AsteroidsGame - SpaceshipController Script - PART 1 & 2
- * 
- * Objective:
- * Implement a player controller for a spaceship in an Asteroids prototype. The player should be able to rotate the ship,
- * move forward, wrap around the screen, and shoot bullets. 
- * 
- * Requirements:
- * PART 1: Player Movement
- * 1. The player should be able to rotate the ship left and right using A/D keys from an input axis.
- *      This movement should be done with Transform based movement. 
- * 2. The player should be able to thrust forward using only the W key from an input axis
- *      This movement should be done with physics applied to a RigidBody2D. 
- * 3. The player should be able to wrap around the screen when they go off one edge and come back on the other side.
- * 4. The player should be able to teleport to a random location on the screen using left shift in an input button. You 
- *      do not need to check if there is an asteroid there. 
- *      Hint: For determining the random location, you can use the ScreenBounds class (see ScreenWrap.cs for how to use)
- *      
- * PART 2: Shooting
- * 1. The player should be able to shoot bullets using the space key in an input button
- *      Bullets should only go in the direction the ship is facing and bullet speed should be controlled by the Bullet.cs
- 
- */
-
 using UnityEngine;
 
-public class AsteroidsPlayerController : MonoBehaviour
+public class SpaceshipController : MonoBehaviour
 {
+    // Makes sure the spaceship has a Rigidbody2D component
     [SerializeField] private Rigidbody2D rb;
+
+    // Controls how quickly the spaceship rotates.
     [SerializeField] private float rotationSpeed = 360f;
+
+    // Controls how much forward force is applied to the spaceship.
     [SerializeField] private float thrustForce = 500f;
+
+    // Position and rotation where bullets will be created.
     [SerializeField] private Transform firePoint;
+
+    // Bullet prefab that will be created when the player fires.
     [SerializeField] private GameObject bulletPrefab;
 
+    // Stores the player's horizontal input for rotation
     private float rotationInput;
+
+    // Stores the players vertical Input for forward thrust
     private float thrustInput;
 
     void Start()
     {
+        // Gets the Rigidbody2D attached to the spaceship.
         rb = GetComponent<Rigidbody2D>();
     }
 
@@ -54,25 +43,30 @@ public class AsteroidsPlayerController : MonoBehaviour
         HandleThrust();
     }
 
-    /// -rotationInput is used so it does the opposite of the input direction, this should simulate the swing of a ship or "spaceship"
-   
     private void HandleRotation()
     {
+        //The negative input makes A rotate counterclockwise
+        // and D rotate clockwise, to simulate space/flight controls.
         float rotationAmount = -rotationInput * rotationSpeed * Time.deltaTime;
-
-        transform.Rotate(Vector3.forward * rotationAmount); // i originally did this with a 0f, 0f, + rotationAmount, but I found it works with a Vector3.Forward when * the rotationAmount
+        
+        // rotates the spaceship around its Z axis
+        transform.Rotate(Vector3.forward * rotationAmount); 
     }
 
     private void HandleThrust()
     {
+        // Only applies thrust when the verticle Input is positive
+        // This allows W to move the ship forword whilst ignoring S input.
         if (thrustInput > 0f)
         {
+            //Applies force in the direciton the ship is facing.
             rb.AddForce(transform.up * thrustForce * thrustInput * Time.fixedDeltaTime);
         }
     }
 
     private void HandleFire()
     {
+        // Fires one bullet when space key is pressed.
         if(Input.GetKeyDown(KeyCode.Space))
         {
             FireBullet();
@@ -81,16 +75,20 @@ public class AsteroidsPlayerController : MonoBehaviour
 
     private void FireBullet()
     {
+        // Prints an error if no bullet prefab has been assigned
+        // and stops the method before it can Instantiate() the missing prefab
         if (bulletPrefab == null)
         {
             Debug.LogWarning("Bullet prefab not assigned!");
             return;
         }
+        // Creates a bullet from the fire point using the fire points rotation.
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
     }
 
     private void HandleHyperspace()
     {
+        // Teleports the ship to a random location whe left shift is pressed.
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             TeleportToRandomLocation();
@@ -99,13 +97,12 @@ public class AsteroidsPlayerController : MonoBehaviour
 
     private void TeleportToRandomLocation()
     {
-        /// these two floats use the ScreenBounds and a random range to determine the x and y positions for the teleport 
-        /// It also uses the ships current z position, I didnt't test for this but I didn't want to set it to anything else like
-        ///  0f and somehow accidentally change its depth or something wild, so its just set to the current z position 
-
+        // Selects a random X position between the left and right edges of the screen.
         float randomX = Random.Range(ScreenBounds.screenLeft, ScreenBounds.screenRight);
+        // Selects a random Y location between the top and bottom  edges of the screen.
         float randomY = Random.Range(ScreenBounds.screenBottom, ScreenBounds.screenTop);
 
+        // Moves the spaceship to the random position
         transform.position = new Vector3(randomX, randomY, transform.position.z); 
     }
 }
