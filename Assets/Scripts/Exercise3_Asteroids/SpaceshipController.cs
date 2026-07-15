@@ -66,8 +66,8 @@ public class SpaceshipController : MonoBehaviour
 
     private void HandleFire()
     {
-        // Fires one bullet when space key is pressed.
-        if(Input.GetKeyDown(KeyCode.Space))
+        // Fires one bullet when Fire1 input is pressed.
+        if(Input.GetButtonDown("Fire1"))
         {
             FireBullet();
         }
