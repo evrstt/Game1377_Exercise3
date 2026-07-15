@@ -1,40 +1,41 @@
-/*
- * Assignment: Asteroids Game - AstroidSpawner Script - PART 2
- * 
- * Objective: Create a functional asteroid spawning script. This script will be responsible for spawning
- * asteroids at the start of the game, as well as spawning smaller asteroids when larger asteroids are destroyed. 
- * ALL ASTEROID SPAWNING SHOULD OCCUR THROUGH THIS SCRIPT. 
- 
-* Requirements:
-* 1. Fill in the SpawnAsteroids method to spawn an asteroid at a location specified by the position and size parameters.
-*       Hint: You may need to create a variable for the prefabs you need. 
-*       Hint: Use the spawnXMax, spawnXMin, spawnYMax, and spawnYMin variables to determine where the asteroids can spawn.
-* 2. Spawn a variable number of asteroids at the start of the game using the SpawnInitialAsteroids() method.
-*       This should be determined by a private variable that can be set in the editor (set it to 5 in the Inspector). 
-*       The asteroids should spawn at random positions within the camera view, but not too close to the center (0,0)
-*       where the player will be (at least 3 units away from the center in any direction).
-*       Hint: Vector3.Distance can tell you how far one point is away from another. 
-*/
 using UnityEngine;
 
 public class AsteroidSpawner : MonoBehaviour
 {
-    // These variables determine the spawn area for the asteroids.
-    // They are calculated at Start based off of the camera size. 
+    // Stores Large, Medium, and Small Asteroid Prefabs
+    [SerializeField] private GameObject largeAsteroidPrefab;
+    [SerializeField] private GameObject mediumAsteroidPrefab;
+    [SerializeField] private GameObject smallAsteroidPrefab;
+
+    // Controls how many Large asteroids spawn whe n the game begins.
+    [SerializeField] private int initialAsteroidCount = 5;
+
+    // Stores min/max horizontal spawn position.
     [SerializeField] private float spawnXMax = 0f;
     [SerializeField] private float spawnXMin = 0f;
+
+    // Stores min/max vertical spawn postions
     [SerializeField] private float spawnYMax = 0f;
     [SerializeField] private float spawnYMin = 0f;
+
+    // Controls how far the initial asteroids spawn from the center.
     [SerializeField] private float playerSafeDistance = 3;
 
     void Start()
     {
+        // Gets half the cameras vertical viewing area.
         float screenHalfHeight = Camera.main.orthographicSize;
+        
+        // Calculates half the cameras horizontal viewing area.
         float screenHalfWidth = Camera.main.aspect * screenHalfHeight;
-        spawnXMax = screenHalfWidth + playerSafeDistance;
-        spawnXMin = -screenHalfWidth - playerSafeDistance;
-        spawnYMax = screenHalfHeight + playerSafeDistance;
-        spawnYMin = -screenHalfHeight - playerSafeDistance;
+
+        // Sets the horizontal and vertical spawn boundaries to the camera boundries.
+        spawnXMax = screenHalfWidth;
+        spawnXMin = -screenHalfWidth;
+        spawnYMax = screenHalfHeight;
+        spawnYMin = -screenHalfHeight;
+
+        // Creates the starting asteroids.
         SpawnInitialAsteroids();
     }
 
@@ -45,11 +46,54 @@ public class AsteroidSpawner : MonoBehaviour
 
     private void SpawnInitialAsteroids()
     {
-        // Spawn initial asteroids at random positions. Ensure that they do not spawn where the player is located. 
+        // Repeats once for every asteroid that should spawn.
+        for(int i = 0; i < initialAsteroidCount; i++)
+        {
+            Vector3 spawnPosition;
+
+            // Continues selecting random position until the position is far enough away from the center of the screen.
+            do
+            {
+                // Selects a random horizontal (X) and Vertical (Y) position.
+                float randomX = Random.Range(spawnXMin, spawnXMax);
+                float randomY = Random.Range(spawnYMin, spawnYMax);
+                
+                // Calculates the new spawn position
+                spawnPosition = new Vector3(randomX, randomY, 0f);
+            }
+            while(Vector3.Distance(spawnPosition, Vector3.zero) < playerSafeDistance);
+            SpawnAsteroid(spawnPosition, Asteroid.AsteroidSize.Large);
+        }
     }
 
     public void SpawnAsteroid(Vector3 position, Asteroid.AsteroidSize size)
     {
-       // Spawn an asteroid at the location specified by position parameter with the size specified by the size parameter.
+        // Stores the prefab that matches the requested asteroid size
+        GameObject asteroidPrefab = null;
+
+        // Selects the correct prefab based on the size parameter.
+        switch (size)
+        {
+            case Asteroid.AsteroidSize.Large:
+                asteroidPrefab = largeAsteroidPrefab;
+                break;
+            
+            case Asteroid.AsteroidSize.Medium:
+                asteroidPrefab = mediumAsteroidPrefab;
+                break;
+            
+            case Asteroid.AsteroidSize.Small:
+                asteroidPrefab = smallAsteroidPrefab;
+                break;
+        }
+        // Checks whether the required asteroid prefab was assigned.
+        if(asteroidPrefab == null)
+        {
+            //Prints a warning for which prefab is missing.
+            Debug.LogWarning(size + " asteroid prefab has not been assigned.");
+            return;
+        }
+        // Creates the selected asteroid at the requested position.
+        Instantiate(asteroidPrefab, position, Quaternion.identity);
     }
 }
