@@ -2,10 +2,11 @@ using UnityEngine;
 
 public class AsteroidSpawner : MonoBehaviour
 {
-    // Stores Large, Medium, and Small Asteroid Prefabs
-    [SerializeField] private GameObject largeAsteroidPrefab;
-    [SerializeField] private GameObject mediumAsteroidPrefab;
-    [SerializeField] private GameObject smallAsteroidPrefab;
+    // Stores the asteroid prefabs in enum
+    // Element 0 = Small
+    // Element 1 = Medium
+    // Element 2 = Large
+    [SerializeField] private Asteroid[] asteroidPrefabs = new Asteroid[3];
 
     // Controls how many Large asteroids spawn whe n the game begins.
     [SerializeField] private int initialAsteroidCount = 5;
@@ -21,6 +22,9 @@ public class AsteroidSpawner : MonoBehaviour
     // Controls how far the initial asteroids spawn from the center.
     [SerializeField] private float playerSafeDistance = 3;
 
+    /// <summary>
+    /// Calculates the screen boundaries and creates the initial asteroids
+    /// </summary>
     void Start()
     {
         // Gets half the cameras vertical viewing area.
@@ -44,6 +48,9 @@ public class AsteroidSpawner : MonoBehaviour
         
     }
 
+    /// <summary>
+    /// Creates the starting large asteroids at random safe positions
+    /// </summary>
     private void SpawnInitialAsteroids()
     {
         // Repeats once for every asteroid that should spawn.
@@ -66,52 +73,41 @@ public class AsteroidSpawner : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Creates asteroids of requested size and position
+    /// </summary>
+    /// <param name="position">
+    /// The World position where the asteroid will be created
+    /// </param>
+    /// <param name="size">
+    /// the size of asteroid that will be created
+    /// </param>
+
     public void SpawnAsteroid(Vector3 position, Asteroid.AsteroidSize size)
     {
-        // Stores the prefab that matches the requested asteroid size
-        GameObject asteroidPrefab = null;
+        // Converts enum into an interger array index
+       int prefabIndex = (int)size;
 
-        // Selects the correct prefab based on the size parameter.
-        switch (size)
+        // Checks whether the array contains the requested index
+       if(prefabIndex < 0 || prefabIndex >= asteroidPrefabs.Length)
         {
-            case Asteroid.AsteroidSize.Large:
-                asteroidPrefab = largeAsteroidPrefab;
-                break;
-            
-            case Asteroid.AsteroidSize.Medium:
-                asteroidPrefab = mediumAsteroidPrefab;
-                break;
-            
-            case Asteroid.AsteroidSize.Small:
-                asteroidPrefab = smallAsteroidPrefab;
-                break;
+            Debug.LogWarning("The requested asteroid size does not exist in the prefab array");
+            return;
         }
-        // Checks whether the required asteroid prefab was assigned.
+
+        // Gets the enum's numerical value
+        Asteroid asteroidPrefab = asteroidPrefabs[prefabIndex];
+
+        // Checks whether a prefab has been assigned to this array element
         if(asteroidPrefab == null)
         {
-            //Prints a warning for which prefab is missing.
             Debug.LogWarning(size + " asteroid prefab has not been assigned.");
             return;
         }
-       
-       // Creates the selected asteroid and stores it as reference
-       GameObject newAsteroid = Instantiate(asteroidPrefab, position, Quaternion.identity);
-
-       // Gets the Asteroid compenent from the new asteroid.
-       Asteroid asteroidScript = newAsteroid.GetComponent<Asteroid>();
-
-       if(asteroidScript == null)
-        {
-            Debug.LogWarning(newAsteroid.name + " does not have an Asteroid component");
-            return;
-        }
-
-        // Gives the asteroid a reference to this spawner.
-        asteroidScript.SetSpawner(this);
-
-        // Tells it the aseroid size
-        asteroidScript.SetSize(size);
-
-        
+        // Creates the asteroid and stores its Asteroid component
+        Asteroid newAsteroid = Instantiate(asteroidPrefab, position, Quaternion.identity);
+        // Gives the new asteroid a refernence to this spawner and tells it what size it is
+        newAsteroid.SetSpawner(this);
+        newAsteroid.SetSize(size);
     }
 }
