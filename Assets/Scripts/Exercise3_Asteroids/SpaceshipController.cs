@@ -29,6 +29,9 @@ public class SpaceshipController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
+        /// < summary>
+        /// Reads player Input and handles rotation firing and hyperspace
+        /// </summary>
     void Update()
     {
         rotationInput = Input.GetAxis("Horizontal");
@@ -38,11 +41,17 @@ public class SpaceshipController : MonoBehaviour
         HandleHyperspace();
     }
 
+    /// <summary>
+    /// Handles physics-based spaceship thrust
+    /// </summary>
     void FixedUpdate()
     {
         HandleThrust();
     }
 
+    /// <summary>
+    /// Rotates the spaceship using the players horizontal input
+    /// </summary>
     private void HandleRotation()
     {
         //The negative input makes A rotate counterclockwise
@@ -53,6 +62,9 @@ public class SpaceshipController : MonoBehaviour
         transform.Rotate(Vector3.forward * rotationAmount); 
     }
 
+    /// <summary>
+    /// Applies forward force when vertical input is positive
+    /// </summary>
     private void HandleThrust()
     {
         // Only applies thrust when the verticle Input is positive
@@ -64,15 +76,21 @@ public class SpaceshipController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Checks whether fire input button is pressed
+    /// </summary>
     private void HandleFire()
     {
-        // Fires one bullet when Fire1 input is pressed.
-        if(Input.GetButtonDown("Fire1"))
+        // Fires one bullet when the assigned input is pressed (assigned to space).
+        if(Input.GetButtonDown("Fire"))
         {
             FireBullet();
         }
     }
 
+    /// <summary>
+    /// Creates a fire point at the assigned fire point
+    /// </summary>
     private void FireBullet()
     {
         // Prints an error if no bullet prefab has been assigned
@@ -86,15 +104,21 @@ public class SpaceshipController : MonoBehaviour
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
     }
 
+    /// <summary>
+    /// Checks whether the hyperspace input button was pressed
+    /// </summary>
     private void HandleHyperspace()
     {
         // Teleports the ship to a random location whe left shift is pressed.
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        if (Input.GetButtonDown("Hyperspace"))
         {
             TeleportToRandomLocation();
         }
     }
 
+    /// <summary>
+    /// Teleports the spaceship to a random positio within screen bounds
+    /// </summary>
     private void TeleportToRandomLocation()
     {
         // Selects a random X position between the left and right edges of the screen.
