@@ -7,6 +7,10 @@ public class Asteroid : MonoBehaviour
     // List of sizes an asteroid can have.
     public enum AsteroidSize { Small, Medium, Large }
 
+    // Stores tags for bullet and player for collision.
+    private const string bulletTag = "Bullet";
+    private const string playerTag = "Player";
+
     // Stores the current size of the asteroid
     [SerializeField] private AsteroidSize size;
 
@@ -16,6 +20,9 @@ public class Asteroid : MonoBehaviour
     // Stores the min/max possible rotation speeds
     [SerializeField] private float minRotationSpeed = -180f;
     [SerializeField] private float maxRotationSpeed = 180f;
+
+    // Controls how many smaller asteroids are created.
+    [SerializeField] private int childAsteroidCount = 2;
 
     // Stores the asteroids Rigidbody2D
     private Rigidbody2D rb;
@@ -44,51 +51,63 @@ public class Asteroid : MonoBehaviour
     {
     }
 
+    /// <summary>
+    /// Stores the AsteroidSpawner that created this asteroid
+    /// </summary>
+    /// <param name="asteroidSpawner"></param>
     public void SetSpawner(AsteroidSpawner asteroidSpawner)
     {
         // Stores the Asteroid spawner that created the asteroid
         spawner = asteroidSpawner;
     }
 
+    /// <summary>
+    ///  Setes the current size of the asteroid
+    /// </summary>
+    /// <param name="asteroidSize"></param>
     public void SetSize(AsteroidSize asteroidSize)
     {
         // Sets the size of the asteroid
         size = asteroidSize;
     }
 
+    /// <summary>
+    /// Handles the Collision when a bullet or player hits the asteroid
+    /// </summary>
+    /// <param name="collision"></param>
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Checks whether the asteroid collided with a bullet
-        if(collision.gameObject.GetComponent<Bullet>()!= null)
+        if(collision.gameObject.CompareTag(bulletTag))
         {
             // Breaks or destroys asteroid
             BreakAsteroid();
         }
         // Checks if the asteroid collided with the player.
-        else if(collision.gameObject.GetComponent<SpaceshipController>() != null)
+        else if(collision.gameObject.CompareTag(playerTag))
         {
             // destroys the players ship
             Destroy(collision.gameObject);
         }
     }
 
+    /// <summary>
+    /// Creates smaller asteroids when possible and destroys this asteroid
+    /// </summary>
     private void BreakAsteroid()
     {
-        // Large splits to Medium
-        if(size == AsteroidSize.Large)
+        if(size != AsteroidSize.Small)
         {
-            SpawnChildren(AsteroidSize.Medium);
+            AsteroidSize childSize = (AsteroidSize)((int)size - 1);
+            SpawnChildren(childSize);
         }
-        // Medium to small
-        else if(size == AsteroidSize.Medium)
-        {
-            SpawnChildren(AsteroidSize.Small);
-        }
-        // Destroys all asteroids after hit
-        // No additional Spawn sizes for small
         Destroy(gameObject);
     }
 
+    /// <summary>
+    /// Creates the smaller asteroids
+    /// </summary>
+    /// <param name="childSize"></param>
     private void SpawnChildren(AsteroidSize childSize)
     {
         // Checks if the asteroid has a reference to the spawner.
@@ -99,7 +118,7 @@ public class Asteroid : MonoBehaviour
         }
 
         // Creates two smaller asteroids from the destroyed asteroids location.
-        for(int i = 0; i < 2; i++)
+        for(int i = 0; i < childAsteroidCount; i++)
         {
             spawner.SpawnAsteroid(transform.position, childSize);
         }
