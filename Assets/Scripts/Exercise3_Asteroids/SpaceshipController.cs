@@ -1,5 +1,8 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(AudioSource))]
+
 public class SpaceshipController : MonoBehaviour
 {
     // Makes sure the spaceship has a Rigidbody2D component
