@@ -1,135 +1,345 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Collider2D))]
 [RequireComponent(typeof(AudioSource))]
+[RequireComponent(typeof(PowerUps))]
 
 public class SpaceshipController : MonoBehaviour
 {
-    // Makes sure the spaceship has a Rigidbody2D component
+    private const string fireInput = "Fire";
+    private const string hyperspaceInput = "Hyperspace";
+
+    private const string deathAnimationTrigger = "Death";
+    private const string fireAnimationTrigger = "Fire";
+    private const string hyperspaceAnimationTrigger = "Hyperspace";
+    private const string thrustAnimationBool = "IsThrusting";
+
     [SerializeField] private Rigidbody2D rb;
+    [SerializeField] private Collider2D playerCollider;
+    [SerializeField] private Animator animator;
+    
+    [SerializeField] private AudioSource effectsAudioSource;
+    [SerializeField] private AudioSource thrustAudioSource;
+    [SerializeField] private AudioClip fireAudioClip;
+    [SerializeField] private AudioClip deathAudioClip;
+    [SerializeField] private AudioClip hyperspaceAudioClip;
+    [SerializeField] private AudioClip thrustAudioClip;
 
-    // Controls how quickly the spaceship rotates.
+    [SerializeField] private PowerUps powerUps;
+
     [SerializeField] private float rotationSpeed = 360f;
-
-    // Controls how much forward force is applied to the spaceship.
     [SerializeField] private float thrustForce = 500f;
-
-    // Position and rotation where bullets will be created.
     [SerializeField] private Transform firePoint;
-
-    // Bullet prefab that will be created when the player fires.
     [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private float fireCooldown = 0.25f;
+    [SerializeField] private float respawnDelay = 1f;
+    [SerializeField] private float spawnShieldDuration = 3f;
+    [SerializeField] private float hyperspaceSafeRadius = 2f;
+    [SerializeField] private int maxHyperspaceAttempts = 25;
+    [SerializeField] private LayerMask asteroidLayer;
 
-    // Stores the player's horizontal input for rotation
     private float rotationInput;
-
-    // Stores the players vertical Input for forward thrust
     private float thrustInput;
+    private float nextFireTime;
+    private float defaultSpeedMultiplier = 1f;
+    private bool canControl = true;
+    private bool isRespawning;
+    private bool isInvincible;
 
     void Start()
     {
-        // Gets the Rigidbody2D attached to the spaceship.
-        rb = GetComponent<Rigidbody2D>();
+        if(rb == null)
+        {
+            rb = GetComponent<Rigidbody2D>();
+        }
+
+        if(playerCollider == null)
+        {
+            playerCollider = GetComponent<Collider2D>();
+        }
+
+        if(animator == null)
+        {
+            animator = GetComponentInChildren<Animator>();
+        }
+
+        if(effectsAudioSource = null)
+        {
+            effectsAudioSource = GetComponent<AudioSource>();
+        }
+
+        if(powerUps == null)
+        {
+            powerUps = GetComponent<PowerUps>();
+        }
     }
 
-        /// < summary>
-        /// Reads player Input and handles rotation firing and hyperspace
-        /// </summary>
+   
     void Update()
     {
+        if(!canControl)
+        {
+            rotationInput = 0f;
+            thrustInput = 0f;
+
+            StopThrustEffects();
+            return;
+        }
+
         rotationInput = Input.GetAxis("Horizontal");
         thrustInput = Input.GetAxis("Vertical");
+
         HandleRotation();
         HandleFire();
         HandleHyperspace();
+        HandleThrustEffects();
     }
 
-    /// <summary>
-    /// Handles physics-based spaceship thrust
-    /// </summary>
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        HandleThrust();
+        if(canControl)
+        {
+            HandleThrust();
+        }
     }
 
-    /// <summary>
-    /// Rotates the spaceship using the players horizontal input
-    /// </summary>
     private void HandleRotation()
     {
-        //The negative input makes A rotate counterclockwise
-        // and D rotate clockwise, to simulate space/flight controls.
-        float rotationAmount = -rotationInput * rotationSpeed * Time.deltaTime;
-        
-        // rotates the spaceship around its Z axis
-        transform.Rotate(Vector3.forward * rotationAmount); 
+        float rotationAmount = -rotationInput * rotationSpeed * GetSpeedMultiplier() * Time.deltaTime;
+        transform.Rotate(Vector3.forward * rotationAmount);
     }
 
-    /// <summary>
-    /// Applies forward force when vertical input is positive
-    /// </summary>
     private void HandleThrust()
     {
-        // Only applies thrust when the verticle Input is positive
-        // This allows W to move the ship forword whilst ignoring S input.
-        if (thrustInput > 0f)
+        if(thrustInput > 0f)
         {
-            //Applies force in the direciton the ship is facing.
-            rb.AddForce(transform.up * thrustForce * thrustInput * Time.fixedDeltaTime);
+            rb.AddForce(transform.up * thrustForce * GetSpeedMultiplier() * thrustInput * Time.deltaTime);
         }
     }
 
-    /// <summary>
-    /// Checks whether fire input button is pressed
-    /// </summary>
-    private void HandleFire()
+    private float GetSpeedMultiplier()
     {
-        // Fires one bullet when the assigned input is pressed (assigned to space).
-        if(Input.GetButtonDown("Fire"))
+        if(powerUps != null)
         {
-            FireBullet();
+            return powerUps.SpeedMultiplier;
         }
+        return defaultSpeedMultiplier;
     }
 
-    /// <summary>
-    /// Creates a fire point at the assigned fire point
-    /// </summary>
-    private void FireBullet()
+    private void HandleThrustEffects()
     {
-        // Prints an error if no bullet prefab has been assigned
-        // and stops the method before it can Instantiate() the missing prefab
-        if (bulletPrefab == null)
+        bool isThrusting = thrustInput > 0f;
+
+        if(animator != null)
         {
-            Debug.LogWarning("Bullet prefab not assigned!");
+            animator.SetBool(thrustAnimationBool, isThrusting);
+        }
+
+        if(thrustAudioSource == null || thrustAudioClip == null)
+        {
             return;
         }
-        // Creates a bullet from the fire point using the fire points rotation.
-        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-    }
 
-    /// <summary>
-    /// Checks whether the hyperspace input button was pressed
-    /// </summary>
-    private void HandleHyperspace()
-    {
-        // Teleports the ship to a random location whe left shift is pressed.
-        if (Input.GetButtonDown("Hyperspace"))
+        if(isThrusting && !thrustAudioSource.isPlaying)
         {
-            TeleportToRandomLocation();
+            thrustAudioSource.clip = thrustAudioClip;
+            thrustAudioSource.loop = true;
+            thrustAudioSource.Play();
+        }
+        else if(!isThrusting && thrustAudioSource.isPlaying)
+        {
+            thrustAudioSource.Stop();
         }
     }
 
-    /// <summary>
-    /// Teleports the spaceship to a random positio within screen bounds
-    /// </summary>
-    private void TeleportToRandomLocation()
+    private void StopThrustEffects()
     {
-        // Selects a random X position between the left and right edges of the screen.
-        float randomX = Random.Range(ScreenBounds.screenLeft, ScreenBounds.screenRight);
-        // Selects a random Y location between the top and bottom  edges of the screen.
-        float randomY = Random.Range(ScreenBounds.screenBottom, ScreenBounds.screenTop);
+        if(animator != null)
+        {
+            animator.SetBool(thrustAnimationBool, false);
+        }
 
-        // Moves the spaceship to the random position
-        transform.position = new Vector3(randomX, randomY, transform.position.z); 
+        if(thrustAudioSource != null && thrustAudioSource.isPlaying)
+        {
+            thrustAudioSource.Stop();
+        }
     }
+
+    private void HandleFire()
+    {
+        if(Input.GetButtonDown(fireInput) && Time.time >= nextFireTime)
+        {
+            FireBullet();
+            nextFireTime = Time.time + fireCooldown;
+        }
+    }
+
+    private void FireBullet()
+    {
+        if(bulletPrefab == null)
+        {
+            Debug.LogWarning("Bullet prefab has not been assigned.");
+            return;
+        }
+        
+        if(firePoint == null)
+        {
+            Debug.LogWarning("Fire Point has not been assigned.");
+            return;
+        }
+
+        GameObject newBullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+
+        if(powerUps != null)
+        {
+            newBullet.transform.localScale *= powerUps.BulletSizeMultiplier;
+        }
+
+        if(animator != null)
+        {
+            animator.SetTrigger(fireAnimationTrigger);
+        }
+
+        PlaySound(fireAudioClip);
+    }
+
+    private void HandleHyperspace()
+    {
+        if(!Input.GetButtonDown(hyperspaceInput))
+        {
+            return;
+        }
+
+        Vector3 safePostion;
+
+        if(FindSafePosition(out safePostion))
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+
+            if(animator != null)
+            {
+                animator.SetTrigger(hyperspaceAnimationTrigger);
+            }
+        
+        PlaySound(hyperspaceAudioClip);
+        transform.position = safePostion;
+        }
+
+        else
+        {
+            Debug.LogWarning("A Safe hyperspace posotion could not be found");
+        }
+    }
+
+    private bool FindSafePosition(out Vector3 safePosition)
+    {
+        for(int attempt = 0; attempt < maxHyperspaceAttempts; attempt++)
+        {
+            float randomX = Random.Range(ScreenBounds.screenLeft, ScreenBounds.screenRight);
+            float randomY = Random.Range(ScreenBounds.screenTop, ScreenBounds.screenBottom);
+
+            Vector3 possiblePositions = new Vector3(randomX, randomY, transform.position.z);
+
+            Collider2D nearbyAsteroid = Physics2D.OverlapCircle(possiblePositions, hyperspaceSafeRadius, asteroidLayer);
+
+            if(nearbyAsteroid == null)
+            {
+                safePosition = possiblePositions;
+                return true;
+            }
+        }
+
+        safePosition = transform.position;
+        return false;
+    }
+
+    private void HandleDeath()
+    {
+        if(isRespawning || isInvincible)
+        {
+            return;
+        }
+
+        isRespawning = true;
+
+        bool hasLivesRemaining = false;
+        
+        if(GameManager.Instance != null)
+        {
+            hasLivesRemaining = GameManager.Instance.LoseLife();
+        }
+
+        else
+        {
+            Debug.LogWarning("A GameManager Instance could not be found.");
+        }
+
+        StartCoroutine(DeathAndRespawnRoutine(hasLivesRemaining));
+    }
+
+    private IEnumerator DeathAndRespawnRoutine(bool hasLivesRemaining)
+    {
+        canControl = false;
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+
+        if(playerCollider != null)
+        {
+            playerCollider.enabled = false;
+        }
+
+        StopThrustEffects();
+
+        if(animator != null)
+        {
+            animator.SetTrigger(deathAnimationTrigger);
+        }
+
+        PlaySound(deathAudioClip);
+
+        yield return new WaitForSeconds(respawnDelay);
+
+        if(!hasLivesRemaining)
+        {
+            gameObject.SetActive(false);
+            yield break;
+        }
+
+        if (GameManager.Instance != null)
+        {
+            transform.position = GameManager.Instance.RespawnPosition;
+        }
+
+        else
+        {
+            transform.position = Vector3.zero;
+        }
+
+        transform.rotation = Quaternion.identity;
+
+        isInvincible = true;
+        canControl = true;
+
+        yield return new WaitForSeconds(spawnShieldDuration);
+
+        if(playerCollider != null)
+        {
+            playerCollider.enabled = true;
+        }
+
+        isInvincible = false;
+        isRespawning = false;
+    }
+
+    private void PlaySound(AudioClip audioClip)
+    {
+        if(effectsAudioSource != null && audioClip != null)
+        {
+            effectsAudioSource.PlayOneShot(audioClip);
+        }
+    }
+    
 }
