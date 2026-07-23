@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 6982899439076481000}
   - component: {fileID: 7179791087049313306}
   - component: {fileID: 4454637147178163111}
-  - component: {fileID: 8576825950796141974}
   - component: {fileID: 6282413807122877266}
+  - component: {fileID: 8649835711907211302}
+  - component: {fileID: 398837319426027029}
   m_Layer: 0
   m_Name: Bullet
   m_TagString: Bullet
@@ -29,8 +30,8 @@ Transform:
   m_GameObject: {fileID: 3228296954555013032}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -0}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -111,7 +112,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847, type: 3}
+  m_Sprite: {fileID: -8184609730613427224, guid: 326bbeb1f9c934545a97ca85119bf6b2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -121,8 +122,22 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!58 &8576825950796141974
-CircleCollider2D:
+--- !u!114 &6282413807122877266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3228296954555013032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 216dc8ffe07d214409aca9f50d36a4d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  bulletSpeed: 10
+  bulletLifetime: 5
+--- !u!68 &8649835711907211302
+EdgeCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -156,18 +171,45 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
---- !u!114 &6282413807122877266
-MonoBehaviour:
+  m_EdgeRadius: 0
+  m_Points:
+  - {x: -0.0041879863, y: 0.11683451}
+  - {x: -0.029033702, y: 0.1171769}
+  - {x: -0.02896033, y: 0.0680875}
+  - {x: -0.04127751, y: 0.068708144}
+  - {x: -0.03954253, y: 0.13945897}
+  - {x: -0.049119353, y: 0.13938202}
+  - {x: -0.049198125, y: 0.17235474}
+  - {x: -0.040562622, y: 0.17325012}
+  - {x: -0.036822833, y: 0.21058242}
+  - {x: -0.009961882, y: 0.24193671}
+  - {x: 0.009094628, y: 0.24127984}
+  - {x: 0.038209528, y: 0.20747833}
+  - {x: 0.039196067, y: 0.17039222}
+  - {x: 0.049861286, y: 0.16920504}
+  - {x: 0.05195806, y: 0.14079602}
+  - {x: 0.041586738, y: 0.13824342}
+  - {x: 0.04083228, y: 0.06650735}
+  - {x: 0.02951237, y: 0.06686238}
+  - {x: 0.028739735, y: 0.116994284}
+  - {x: -0.0013594166, y: 0.11901903}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
+--- !u!111 &398837319426027029
+Animation:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3228296954555013032}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 216dc8ffe07d214409aca9f50d36a4d3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  bulletSpeed: 10
-  bulletLifetime: 5
+  serializedVersion: 4
+  m_Animation: {fileID: -5331629324725413385, guid: 326bbeb1f9c934545a97ca85119bf6b2, type: 3}
+  m_Animations: []
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_UpdateMode: 0
+  m_CullingType: 0

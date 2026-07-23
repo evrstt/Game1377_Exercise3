@@ -18,7 +18,10 @@ public class SpaceshipController : MonoBehaviour
 
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Collider2D playerCollider;
-    [SerializeField] private Animator animator;
+    [SerializeField] private Animator weaponAnimator;
+    [SerializeField] private Animator thrustAnimator;
+    [SerializeField] private Animator shieldAnimator;
+    [SerializeField] private Animator hyperspaceAnimator;
     
     [SerializeField] private AudioSource effectsAudioSource;
     [SerializeField] private AudioSource thrustAudioSource;
@@ -60,11 +63,6 @@ public class SpaceshipController : MonoBehaviour
             playerCollider = GetComponent<Collider2D>();
         }
 
-        if(animator == null)
-        {
-            animator = GetComponentInChildren<Animator>();
-        }
-
         if(effectsAudioSource = null)
         {
             effectsAudioSource = GetComponent<AudioSource>();
@@ -73,6 +71,21 @@ public class SpaceshipController : MonoBehaviour
         if(powerUps == null)
         {
             powerUps = GetComponent<PowerUps>();
+        }
+
+        if(weaponAnimator == null)
+        {
+            Debug.LogWarning("Weapon Animator has not been assigned.");
+        }
+
+        if(thrustAnimator == null)
+        {
+            Debug.LogWarning("Thrust Animator has not been assigned.");
+        }
+
+        if(shieldAnimator == null)
+        {
+            Debug.LogWarning("Shield Animator has not been assigned.");
         }
     }
 
@@ -132,9 +145,9 @@ public class SpaceshipController : MonoBehaviour
     {
         bool isThrusting = thrustInput > 0f;
 
-        if(animator != null)
+        if(thrustAnimator != null)
         {
-            animator.SetBool(thrustAnimationBool, isThrusting);
+            thrustAnimator.SetBool(thrustAnimationBool, isThrusting);
         }
 
         if(thrustAudioSource == null || thrustAudioClip == null)
@@ -156,9 +169,9 @@ public class SpaceshipController : MonoBehaviour
 
     private void StopThrustEffects()
     {
-        if(animator != null)
+        if(thrustAnimator != null)
         {
-            animator.SetBool(thrustAnimationBool, false);
+            thrustAnimator.SetBool(thrustAnimationBool, false);
         }
 
         if(thrustAudioSource != null && thrustAudioSource.isPlaying)
@@ -197,9 +210,9 @@ public class SpaceshipController : MonoBehaviour
             newBullet.transform.localScale *= powerUps.BulletSizeMultiplier;
         }
 
-        if(animator != null)
+        if(weaponAnimator != null)
         {
-            animator.SetTrigger(fireAnimationTrigger);
+            weaponAnimator.SetTrigger(fireAnimationTrigger);
         }
 
         PlaySound(fireAudioClip);
@@ -219,9 +232,9 @@ public class SpaceshipController : MonoBehaviour
             rb.linearVelocity = Vector2.zero;
             rb.angularVelocity = 0f;
 
-            if(animator != null)
+            if(hyperspaceAnimator != null)
             {
-                animator.SetTrigger(hyperspaceAnimationTrigger);
+                hyperspaceAnimator.SetTrigger(hyperspaceAnimationTrigger);
             }
         
         PlaySound(hyperspaceAudioClip);
@@ -293,9 +306,9 @@ public class SpaceshipController : MonoBehaviour
 
         StopThrustEffects();
 
-        if(animator != null)
+        if(thrustAnimator != null)
         {
-            animator.SetTrigger(deathAnimationTrigger);
+            thrustAnimator.SetTrigger(deathAnimationTrigger);
         }
 
         PlaySound(deathAudioClip);

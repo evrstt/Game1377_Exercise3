@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f48d3d45e03b67a4983e73cd22b739f9
+guid: e2f8b120ac559374cabd72784d61ae6f
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -127,19 +127,61 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: Main Ship - Engines - Supercharged Engine
+  - name: Frame_0
     originalName: 
-    pivot: {x: 0.5, y: 0.5}
-    alignment: 0
+    pivot: {x: 0.6, y: -0.4666667}
+    alignment: 9
+    border: {x: 0, y: 0, z: 0, w: 0}
+    customData: 
+    rect:
+      serializedVersion: 2
+      x: 17
+      y: 4
+      width: 5
+      height: 15
+    spriteID: 46466e03f5e3cd848b7c79fb76a3f8ed
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 17, y: 4}
+  - name: Frame_1
+    originalName: 
+    pivot: {x: 0.6, y: -0.29411766}
+    alignment: 9
+    border: {x: 0, y: 0, z: 0, w: 0}
+    customData: 
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 30
+      width: 5
+      height: 17
+    spriteID: 900c0002d84b73b4e85b0fa77efea1b8
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 4, y: 30}
+  - name: Frame_2
+    originalName: 
+    pivot: {x: 0.6, y: -0.22222222}
+    alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
     rect:
       serializedVersion: 2
       x: 4
       y: 4
-      width: 30
-      height: 26
-    spriteID: d4990c235e3ec9144802fead0ed5b499
+      width: 5
+      height: 18
+    spriteID: 1fa1331785d8d374381b67ebeb52c6e6
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -153,25 +195,43 @@ ScriptedImporter:
   asepriteLayers:
   - layerIndex: 0
     uuid:
-      value0: 41993045
+      value0: 2649331218
       value1: 0
       value2: 0
       value3: 0
     guid: 0
-    name: Main Ship - Engines - Supercharged Engine
+    name: Main ship weapon - Projectile - Rocket
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: Main Ship - Engines - Supercharged Engine
+    - name: Frame_0
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
-        x: 9
-        y: 11
-        width: 30
-        height: 26
-      spriteId: d4990c235e3ec9144802fead0ed5b499
+        x: 13
+        y: 7
+        width: 5
+        height: 15
+      spriteId: 46466e03f5e3cd848b7c79fb76a3f8ed
+    - name: Frame_1
+      frameIndex: 1
+      additiveSortOrder: 0
+      cellRect:
+        x: 13
+        y: 5
+        width: 5
+        height: 17
+      spriteId: 900c0002d84b73b4e85b0fa77efea1b8
+    - name: Frame_2
+      frameIndex: 2
+      additiveSortOrder: 0
+      cellRect:
+        x: 13
+        y: 4
+        width: 5
+        height: 18
+      spriteId: 1fa1331785d8d374381b67ebeb52c6e6
     linkedCells: []
     tileCells: []
     tileSetIndex: 0
@@ -181,5 +241,5 @@ ScriptedImporter:
   generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
-  canvasSize: {x: 48, y: 48}
-  previousTextureSize: {x: 64, y: 64}
+  canvasSize: {x: 32, y: 32}
+  previousTextureSize: {x: 32, y: 64}
