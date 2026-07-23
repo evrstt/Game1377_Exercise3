@@ -13,9 +13,9 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
+  - Player
+  - Asteroid
+  - Bullet
   - 
   - 
   - 
@@ -42,6 +42,15 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Overship
+    uniqueID: 2046799143
+    locked: 0
+  - name: Ship
+    uniqueID: 2262352181
+    locked: 0
+  - name: Undership
+    uniqueID: 1590646363
     locked: 0
   m_RenderingLayers:
   - Default
